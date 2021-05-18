@@ -28,14 +28,13 @@ def load_config_file(filepath):
       elif count==1:
         defaultCheck(lineValues[1],width, height,waters,alreadAdded)
       elif count==2:
-        pass
+        defaultCheck(lineValues[1],width, height,woods,alreadAdded)
       elif count==3:
-        pass
+        defaultCheck(lineValues[1],width, height,foods,alreadAdded)
       elif count==4:
-        pass
+        defaultCheck(lineValues[1],width, height,golds,alreadAdded)
       count=count+1
-  print(width)
-  return width, height, waters, woods, foods, golds
+  return width[0], height[0], waters, woods, foods, golds
 
 
 
@@ -83,3 +82,9 @@ if __name__ == "__main__":
     print("Usage: python3 little_battle.py <filepath>")
     sys.exit()
   width, height, waters, woods, foods, golds = load_config_file(sys.argv[1])
+  print(width)
+  print(height)
+  print(waters)
+  print(woods)
+  print(foods)
+  print(golds)
