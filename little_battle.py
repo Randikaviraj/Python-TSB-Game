@@ -41,10 +41,10 @@ def load_config_file(filepath):
 # line one checker
 def lineOneCheck(line,width, height):
   values=line.strip().split("x")
-  w=int(values[0])
-  h=int(values[1])
   if len(values)!=2:
     raise SyntaxError("Invalid Configuration File: frame should be in format widthxheight!")
+  w=int(values[0])
+  h=int(values[1])
   if not((w>=5 and w<=7) and (h>=5 and h<=7)):
     raise ArithmeticError("Invalid Configuration File: width and height should range from 5 to 7!")
   width[0]=w
