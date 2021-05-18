@@ -77,11 +77,36 @@ def defaultCheck(line,width, height,dataArray,alreadAdded):
 def printRecruitPrices():
   print("\nRecruit Prices: \n  Spearman (S) - 1W, 1F \n  Archer (A) - 1W, 1G \n  Knight (K) - 1F,1G \n  Scout (T) - 1W, 1F, 1G \n")
   
-def displayMap():
+def displayMap(map):
   print("\nPrint Please check the battlefield, commander.\n")
+  print("  X00", end ="")
+  for i in range(1,len(map[0])):
+    print(" ", end ="")
+    print("0"+str(i),end ="")
+  print("X")
+  print(" Y+--",end ="")
+  for i in range(1,len(map)):
+    print("-", end ="")
+    print("--",end ="")
+  print("Y")
+  j=0
+  for row in map:
+    print("0"+str(j), end ="")
+    for ele in row:
+      print("|", end ="")
+      print(ele,end ="")
+    print("")
+    j=j+1 
+  print(" Y+--",end ="")
+  for i in range(1,len(map)):
+    print("-", end ="")
+    print("--",end ="")
+  print("Y")
+    
+     
 
 def initMap(width, height, waters, woods, foods, golds):
-    matrix = [[" "] * width for _ in range(height)]
+    matrix = [["  "] * width for _ in range(height)]
     for water in waters:
       matrix[water[0]][water[1]]="~~"
       
@@ -104,7 +129,7 @@ if __name__ == "__main__":
     print("Configuration file "+sys.argv[1]+" was loaded.",)
     print("Game Started: Little Battle! (enter QUIT to quit the game)\n")
     map=initMap(width, height, waters, woods, foods, golds)
-    print(map)
+    displayMap(map)
   except Exception as e:
     print('An exception occurred :'+str(e))
     sys.exit()
