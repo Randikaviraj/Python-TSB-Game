@@ -132,58 +132,87 @@ def initMap(width, height, waters, woods, foods, golds):
     return matrix
   
 
-def mainLogic(playerGoodsWFG,player,map):
+def mainRescruitLogic(playerGoodsWFG,player,map):
   print("+++Player "+str(player)+"'s Stage: Recruit Armies+++")
-  print("[Your Asset: Wood – "+str(playerGoodsWFG[0])+" Food – "+str(playerGoodsWFG[1])+" Gold – "+str(playerGoodsWFG[2])+"]")
   while True:
-    emptyGoods=0
-    for good in playerGoodsWFG:
-      if good==0:
-        emptyGoods=emptyGoods+1
-    if emptyGoods==2:
-      print("No resources to recruit any armies")
-      return
+    print("[Your Asset: Wood – "+str(playerGoodsWFG[0])+" Food – "+str(playerGoodsWFG[1])+" Gold – "+str(playerGoodsWFG[2])+"]")
+    while True:
+      emptyGoods=0
+      for good in playerGoodsWFG:
+        if good==0:
+          emptyGoods=emptyGoods+1
+      if emptyGoods==2:
+        print("No resources to recruit any armies")
+        return
+      
+      if player==1:
+        if not(map[0][1]=="  " or map[1][0]=="  " or map[2][1]=="  " or map[1][2]=="  "):
+          print("No place to recruit new armies.")
+          return
+      else:
+        width=len(map[0])
+        height=len(map)
+        if not(map[width-3][height-2]!="  " or map[width-2][height-3]!="  " or map[width-1][height-2]!="  " or map[width-2][height-1]!="  "):
+          print("No place to recruit new armies.")
+          return
+      userInput = input("\nWhich type of army to recruit, (enter) ‘S’,‘A’, ‘K’, or ‘T’? Enter ‘NO’ to end this stage\n")
+      userInput=userInput.strip()
+      if commandPanel(userInput,map):
+        continue
+      if userInput=="S" or userInput=="A" or userInput=="K" or userInput=="T":
+        if insaficientResourceCheck(playerGoodsWFG,userInput):
+          print("Insufficient resources. Try again.")
+          continue
+        rescruit(userInput,player,map)
+        break
+      elif userInput=="NO":
+        return
+      else:
+        print("Sorry, invalid input. Try again.")
+        continue
     
-    if player==1:
-      if not(map[0][1]!="  " or map[1][0]!="  " or map[2][1]!="  " or map[1][2]!="  "):
-        print("No place to recruit new armies.")
-        return
-    else:
-      width=len(map[0])
-      height=len(map)
-      if not(map[width-3][height-2]!="  " or map[width-2][height-3]!="  " or map[width-1][height-2]!="  " or map[width-2][height-1]!="  "):
-        print("No place to recruit new armies.")
-        return
-    userInput = input("\nWhich type of army to recruit, (enter) ‘S’,‘A’, ‘K’, or ‘T’? Enter ‘NO’ to end this stage\n")
-    userInput=userInput.strip()
-    if commandPanel(userInput,map):
+
+def rescruit(userInput,player,map):
+  if userInput=="S":
+    name="Sperman"
+  elif userInput=="A":
+    name="Archer"
+  elif userInput=="K":
+    name="Knight" 
+  else:
+    name="Scout"
+  while True:
+    userXY = input("You want to recruit a "+name+".Enter two integers as format ‘x y’ to place your army.\n")
+    userXY=userXY.strip()
+    if commandPanel(userXY,map):
       continue
-    if userInput=="S":
-      if insaficientResourceCheck(playerGoodsWFG,userInput):
-        print("Insufficient resources. Try again.")
+    xy=userXY.split(" ")
+    
+    try:
+      if(len(xy)!=2):
+        print("Sorry, invalid input. Try again.")
         continue
-    elif userInput=="A":
-      if insaficientResourceCheck(playerGoodsWFG,userInput):
-        print("Insufficient resources. Try again.")
-        continue
-    elif userInput=="K":
-      if insaficientResourceCheck(playerGoodsWFG,userInput):
-        print("Insufficient resources. Try again.")
-        continue
-    elif userInput=="T":
-      if insaficientResourceCheck(playerGoodsWFG,userInput):
-        print("Insufficient resources. Try again.")
-        continue
-    elif userInput=="NO":
-      return
-    else:
+      x=int(xy[0])
+      y=int(xy[1])
+    except:
       print("Sorry, invalid input. Try again.")
       continue
     
-
-def rescruit(userInput):
-  userXY = input("You want to recruit a "+userInput+".Enter two integers as format ‘x y’ to place your army.")
-  while True:
+    if ((player==1) and not((x==0 and y==1)or(x==1 and y==0) or (x==2 and y==1) or (x==1 and y==2))):
+      print("You must place your newly recruited unit in an unoccupied position next to your home base. Try again.")
+      continue
+    elif player==2:
+      width=len(map[0])
+      height=len(map)
+      if not(((x,y)==(width-3, height-2)) or ((x,y)==(width-2,height-3)) or ((x,y)==(width-1, height-2)) or ((x,y)==(width-2, height-1))):
+        print("You must place your newly recruited unit in an unoccupied position next to your home base. Try again.")
+        continue
+    if map[x][y]!="  ":
+      print("Sorry, invalid input. Try again.")
+      continue
+    map[x][y]=userInput+str(player)
+    print("You has recruited a "+name)
+    
     
     
 def insaficientResourceCheck(playerGoodsWFG,userInput):
@@ -199,12 +228,7 @@ def insaficientResourceCheck(playerGoodsWFG,userInput):
   
   
   
-    
-def playerOneBlock(args):
-  pass
 
-def playerTwoBlock(args):
-  pass
 
 if __name__ == "__main__":
   if len(sys.argv) != 2:
@@ -226,6 +250,7 @@ if __name__ == "__main__":
     while True:
       print("-Year "+str(year)+"-")
       year=year+1
+      mainRescruitLogic(player1WFG,1,map)
       
   except Exception as e:
     print('An exception occurred :'+str(e))
