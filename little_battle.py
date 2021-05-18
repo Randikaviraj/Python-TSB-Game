@@ -182,7 +182,7 @@ def rescruit(userInput,player,map):
   else:
     name="Scout"
   while True:
-    userXY = input("You want to recruit a "+name+".Enter two integers as format ‘x y’ to place your army.\n")
+    userXY = input("You want to recruit a "+name+". Enter two integers as format ‘x y’ to place your army.\n")
     userXY=userXY.strip()
     if commandPanel(userXY,map):
       continue
@@ -208,26 +208,37 @@ def rescruit(userInput,player,map):
         print("You must place your newly recruited unit in an unoccupied position next to your home base. Try again.")
         continue
     if map[x][y]!="  ":
-      print("Sorry, invalid input. Try again.")
+      print("You must place your newly recruited unit in an unoccupied position next to your home base. Try again.")
       continue
     map[x][y]=userInput+str(player)
-    print("You has recruited a "+name)
+    print("You has recruited a "+name+"\n")
+    return
     
     
     
 def insaficientResourceCheck(playerGoodsWFG,userInput):
-  if userInput=="S" and player1WFG[0]>0 and playerGoodsWFG[1]>0:
+  if userInput=="S" and playerGoodsWFG[0]>0 and playerGoodsWFG[1]>0:
+    playerGoodsWFG[0]=playerGoodsWFG[0]-1
+    playerGoodsWFG[1]=playerGoodsWFG[1]-1
     return False
-  elif userInput=="A" and player1WFG[0]>0 and playerGoodsWFG[2]>0:
+  elif userInput=="A" and playerGoodsWFG[0]>0 and playerGoodsWFG[2]>0:
+    playerGoodsWFG[0]=playerGoodsWFG[0]-1
+    playerGoodsWFG[2]=playerGoodsWFG[2]-1
     return False
-  elif userInput=="K" and player1WFG[1]>0 and playerGoodsWFG[2]>0:
+  elif userInput=="K" and playerGoodsWFG[1]>0 and playerGoodsWFG[2]>0:
+    playerGoodsWFG[1]=playerGoodsWFG[1]-1
+    playerGoodsWFG[2]=playerGoodsWFG[2]-1
     return False
-  elif userInput=="T" and player1WFG[0]>0 and playerGoodsWFG[1]>0 and player1WFG[2]>0:
+  elif userInput=="T" and playerGoodsWFG[0]>0 and playerGoodsWFG[1]>0 and playerGoodsWFG[2]>0:
+    playerGoodsWFG[0]=playerGoodsWFG[0]-1
+    playerGoodsWFG[1]=playerGoodsWFG[1]-1
+    playerGoodsWFG[2]=playerGoodsWFG[2]-1
     return False
   return True
   
   
-  
+def mainMoveLogic(player,map):
+  print("===Player "+str(player)+"'s Stage: Move Armies===.")
 
 
 if __name__ == "__main__":
@@ -251,6 +262,7 @@ if __name__ == "__main__":
       print("-Year "+str(year)+"-")
       year=year+1
       mainRescruitLogic(player1WFG,1,map)
+      print(map)
       
   except Exception as e:
     print('An exception occurred :'+str(e))
