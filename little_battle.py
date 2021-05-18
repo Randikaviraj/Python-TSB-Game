@@ -73,6 +73,11 @@ def defaultCheck(line,width, height,dataArray,alreadAdded):
     
     alreadAdded.append((w,h))
     dataArray.append((w,h))
+    
+def printRecruitPrices():
+  print("\nRecruit Prices: \n  Spearman (S) - 1W, 1F \n  Archer (A) - 1W, 1G \n  Knight (K) - 1F,1G \n  Scout (T) - 1W, 1F, 1G \n")
+  
+
 
     
     
@@ -81,10 +86,12 @@ if __name__ == "__main__":
   if len(sys.argv) != 2:
     print("Usage: python3 little_battle.py <filepath>")
     sys.exit()
-  width, height, waters, woods, foods, golds = load_config_file(sys.argv[1])
-  print(width)
-  print(height)
-  print(waters)
-  print(woods)
-  print(foods)
-  print(golds)
+  try:
+    width, height, waters, woods, foods, golds = load_config_file(sys.argv[1])
+    print("Configuration file "+sys.argv[1]+" was loaded.",)
+    print("Game Started: Little Battle! (enter QUIT to quit the game)")
+    
+  except Exception as e:
+    print('An exception occurred :'+str(e))
+    sys.exit()
+  
