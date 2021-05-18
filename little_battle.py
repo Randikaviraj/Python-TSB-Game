@@ -78,7 +78,7 @@ def printRecruitPrices():
   print("\nRecruit Prices: \n  Spearman (S) - 1W, 1F \n  Archer (A) - 1W, 1G \n  Knight (K) - 1F,1G \n  Scout (T) - 1W, 1F, 1G \n")
   
 def displayMap(map):
-  print("\nPrint Please check the battlefield, commander.\n")
+  print("Please check the battlefield, commander.\n")
   print("  X00", end ="")
   for i in range(1,len(map[0])):
     print(" ", end ="")
@@ -102,7 +102,19 @@ def displayMap(map):
     print("-", end ="")
     print("--",end ="")
   print("Y")
-    
+
+
+def commandPanel(command,map):
+  if command=="QUIT":
+    sys.exit()
+  elif command=="DIS":
+    displayMap(map)
+    return True
+  elif command=="PRIS":
+    printRecruitPrices()
+    return True
+  else:
+    return False
      
 
 def initMap(width, height, waters, woods, foods, golds):
@@ -118,7 +130,81 @@ def initMap(width, height, waters, woods, foods, golds):
     for gold in golds:
       matrix[gold[0]][gold[1]]="GG"
     return matrix
+  
+
+def mainLogic(playerGoodsWFG,player,map):
+  print("+++Player "+str(player)+"'s Stage: Recruit Armies+++")
+  print("[Your Asset: Wood – "+str(playerGoodsWFG[0])+" Food – "+str(playerGoodsWFG[1])+" Gold – "+str(playerGoodsWFG[2])+"]")
+  while True:
+    emptyGoods=0
+    for good in playerGoodsWFG:
+      if good==0:
+        emptyGoods=emptyGoods+1
+    if emptyGoods==2:
+      print("No resources to recruit any armies")
+      return
     
+    if player==1:
+      if not(map[0][1]!="  " or map[1][0]!="  " or map[2][1]!="  " or map[1][2]!="  "):
+        print("No place to recruit new armies.")
+        return
+    else:
+      width=len(map[0])
+      height=len(map)
+      if not(map[width-3][height-2]!="  " or map[width-2][height-3]!="  " or map[width-1][height-2]!="  " or map[width-2][height-1]!="  "):
+        print("No place to recruit new armies.")
+        return
+    userInput = input("\nWhich type of army to recruit, (enter) ‘S’,‘A’, ‘K’, or ‘T’? Enter ‘NO’ to end this stage\n")
+    userInput=userInput.strip()
+    if commandPanel(userInput,map):
+      continue
+    if userInput=="S":
+      if insaficientResourceCheck(playerGoodsWFG,userInput):
+        print("Insufficient resources. Try again.")
+        continue
+    elif userInput=="A":
+      if insaficientResourceCheck(playerGoodsWFG,userInput):
+        print("Insufficient resources. Try again.")
+        continue
+    elif userInput=="K":
+      if insaficientResourceCheck(playerGoodsWFG,userInput):
+        print("Insufficient resources. Try again.")
+        continue
+    elif userInput=="T":
+      if insaficientResourceCheck(playerGoodsWFG,userInput):
+        print("Insufficient resources. Try again.")
+        continue
+    elif userInput=="NO":
+      return
+    else:
+      print("Sorry, invalid input. Try again.")
+      continue
+    
+
+def rescruit(userInput):
+  userXY = input("You want to recruit a "+userInput+".Enter two integers as format ‘x y’ to place your army.")
+  while True:
+    
+    
+def insaficientResourceCheck(playerGoodsWFG,userInput):
+  if userInput=="S" and player1WFG[0]>0 and playerGoodsWFG[1]>0:
+    return False
+  elif userInput=="A" and player1WFG[0]>0 and playerGoodsWFG[2]>0:
+    return False
+  elif userInput=="K" and player1WFG[1]>0 and playerGoodsWFG[2]>0:
+    return False
+  elif userInput=="T" and player1WFG[0]>0 and playerGoodsWFG[1]>0 and player1WFG[2]>0:
+    return False
+  return True
+  
+  
+  
+    
+def playerOneBlock(args):
+  pass
+
+def playerTwoBlock(args):
+  pass
 
 if __name__ == "__main__":
   if len(sys.argv) != 2:
@@ -130,6 +216,17 @@ if __name__ == "__main__":
     print("Game Started: Little Battle! (enter QUIT to quit the game)\n")
     map=initMap(width, height, waters, woods, foods, golds)
     displayMap(map)
+    print("\nEnter DIS to display the map")
+    printRecruitPrices()
+    print("Enter PRIS to display the price list\n")
+    
+    year=617
+    player1WFG=[2,2,2]
+    player2WFG=[2,2,2]
+    while True:
+      print("-Year "+str(year)+"-")
+      year=year+1
+      
   except Exception as e:
     print('An exception occurred :'+str(e))
     sys.exit()
