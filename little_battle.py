@@ -133,7 +133,7 @@ def initMap(width, height, waters, woods, foods, golds):
   
 
 def mainRescruitLogic(playerGoodsWFG,player,map):
-  print("+++Player "+str(player)+"'s Stage: Recruit Armies+++")
+  print("\n+++Player "+str(player)+"'s Stage: Recruit Armies+++")
   while True:
     print("[Your Asset: Wood – "+str(playerGoodsWFG[0])+" Food – "+str(playerGoodsWFG[1])+" Gold – "+str(playerGoodsWFG[2])+"]")
     while True:
@@ -152,7 +152,7 @@ def mainRescruitLogic(playerGoodsWFG,player,map):
       else:
         width=len(map[0])
         height=len(map)
-        if not(map[width-3][height-2]!="  " or map[width-2][height-3]!="  " or map[width-1][height-2]!="  " or map[width-2][height-1]!="  "):
+        if (map[width-3][height-2]!="  " and map[width-2][height-3]!="  " and map[width-1][height-2]!="  " and map[width-2][height-1]!="  "):
           print("No place to recruit new armies.")
           return
       userInput = input("\nWhich type of army to recruit, (enter) ‘S’,‘A’, ‘K’, or ‘T’? Enter ‘NO’ to end this stage\n")
@@ -335,9 +335,9 @@ def move(x1,y1,x2,y2,player,map,playerWFG,opositePlayer):
     return False
   
   print("\nYou have moved "+name+" from ("+str(x1)+", "+str(y1)+") to("+str(x2)+", "+str(y2)+").")
-  if armyType=="T":
-    xmid=x1 if x1==x2 else x1+1
-    ymid=y1 if y1==y2 else y1+1
+  if armyType=="T" and (abs(x2-x1)>1 or abs(y2-y1)>1):
+    xmid=x1 if x1==x2 else min(x1,x2)+1
+    ymid=y1 if y1==y2 else min(y1,y2)+1
     
     if map[xmid][ymid]=="~~":
       map[x1][y1]="  "
