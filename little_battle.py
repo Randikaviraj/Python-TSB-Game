@@ -119,6 +119,8 @@ def commandPanel(command,map):
 
 def initMap(width, height, waters, woods, foods, golds):
     matrix = [["  "] * width for _ in range(height)]
+    matrix[1][1]="H1"
+    matrix[width-2][height-2]="H2"
     for water in waters:
       matrix[water[0]][water[1]]="~~"
       
@@ -344,13 +346,13 @@ def move(x1,y1,x2,y2,player,map,playerWFG,opositePlayer):
       print("We lost the army "+name+" due to your command!")
       return True
     
-    if  counterCheck(x1,y1,xmid,ymid,armyType,map,name,player,opositePlayer) and map[xmid][ymid]!="  ":
+    if  counterCheck(x1,y1,xmid,ymid,armyType,map,name,player,opositePlayer) and map[xmid][ymid]!="  " and map[xmid][ymid]!="H"+str(player):
       return True
     
     if checkGoods(x1,y1,xmid,ymid,player,map,playerWFG,armyType) and checkGoods(xmid,ymid,x2,y2,player,map,playerWFG,armyType):
       return True
     else:
-      counterval= counterCheck(xmid,ymid,x2,y2,armyType,map,name,player,opositePlayer)
+      counterval= counterCheck(x1,x1,x2,y2,armyType,map,name,player,opositePlayer)
       if not counterval:
         return False
       if counterval and (captureHomeCheck(x2,y2,map,player) or captureHomeCheck(xmid,ymid,map,player)):
@@ -407,7 +409,9 @@ def captureHomeCheck(x2,y2,map,player):
 
 
 def counterCheck(x1,y1,x2,y2,armyType,map,name,player,opositePlayer):
-  
+  if map[x2][y2]=="H"+str(player):
+    map[x1][y1]="  "
+    return True
   if map[x2][y2]=="~~":
     map[x1][y1]="  "
     print("We lost the army "+name+" due to your command!")
