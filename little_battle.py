@@ -211,6 +211,7 @@ def rescruit(userInput,player,map):
       print("You must place your newly recruited unit in an unoccupied position next to your home base. Try again.")
       continue
     map[x][y]=userInput+str(player)
+     
     print("You has recruited a "+name+"\n")
     return
     
@@ -235,12 +236,237 @@ def insaficientResourceCheck(playerGoodsWFG,userInput):
     playerGoodsWFG[2]=playerGoodsWFG[2]-1
     return False
   return True
-  
-  
-def mainMoveLogic(player,map):
-  print("===Player "+str(player)+"'s Stage: Move Armies===.")
 
 
+
+  
+def checkForArmy(player,map,armiesToMove):
+  result=False
+  for row in range(len(map)):
+    for col in range(len(map[0])):
+      if map[row][col]=="S"+str(player):
+        armiesToMove[0].append((row,col))
+        result=True
+        continue
+      if map[row][col]=="K"+str(player):
+        armiesToMove[1].append((row,col)) 
+        result=True
+        continue
+      if map[row][col]=="A"+str(player): 
+        armiesToMove[2].append((row,col))
+        result=True
+        continue
+      if map[row][col]=="T"+str(player):
+        armiesToMove[3].append((row,col)) 
+        result=True
+        continue    
+  return result
+
+def printArmiesToMove(armiesToMove):
+  armies=["Spearman","Archer","Knight","Scout"]
+  count=-1
+  print("\nArmies to Move")
+  for row in armiesToMove:
+    count=count+1
+    if len(row)==0:
+      continue
+    print(" "+armies[count]+":",end="")
+    for ele in row:
+      print(" ("+str(ele[0])+","+str(ele[1])+")",end="")
+    print("")
+  print("")
+    
+  
+
+  
+def mainMoveLogic(player,map,playerWFG,opositePlayer):
+  print("\n===Player "+str(player)+"'s Stage: Move Armies===")
+  
+  while True:
+    armiesToMove=[[],[],[],[]]
+    if not checkForArmy(player,map,armiesToMove):
+      print("\nNo Army to Move: next turn\n")
+      return
+    else:
+      printArmiesToMove(armiesToMove)
+      
+    
+    userInput=input("Enter four integers as a format ‘x0 y0 x1 y1’ to represent move unit from (x0, y0) to (x1, y1) or ‘NO’ to end this turn\n")
+    
+    if commandPanel(userInput,map):
+      continue
+    if userInput=="NO":
+      return
+    try:
+      x1,y1,x2,y2=userInput.strip().split(" ")
+      x1=int(x1)
+      x2=int(x2)
+      y1=int(y1)
+      y2=int(y2)     
+    except:
+      print('Invalid move. Try again.')
+      continue
+    if not move(x1,y1,x2,y2,player,map,playerWFG,opositePlayer):
+      print('Invalid move. Try again.')
+      continue
+    return
+      
+
+def move(x1,y1,x2,y2,player,map,playerWFG,opositePlayer):
+  if player==1 and x2==1 and y2==1:
+    return False
+  elif player==2 and x2==len(map[0])-2 and y2==len(map)-2:
+    return False
+  elif not(x1==x2 and y1!=y2) and not(x1!=x2 and y1==y2):
+    return False
+  elif x1>len(map[0])-1 or x2>len(map[0])-1 or y1 >len(map)-1 or y2 >len(map)-1 or x1<0 or x2<0 or y1<0 or y2< 0:
+    return False
+  
+  
+  value=map[x1][y1].split(str(player))
+  if len(value)!=2:
+    return False
+  armyType=value[0]
+  name=getArmyName(armyType)
+
+  if (armyType=="S" or armyType=="A" or armyType=="K") and not((abs(x1-x2)==1) or (abs(y1-y2)==1)):
+    return False
+  elif (armyType=="T") and not((abs(x1-x2)<=2) and (abs(y1-y2)<=2)):
+    return False
+  
+  print("\nYou have moved "+name+" from ("+str(x1)+", "+str(y1)+") to("+str(x2)+", "+str(y2)+").")
+  if armyType=="T":
+    xmid=x1 if x1==x2 else x1+1
+    ymid=y1 if y1==y2 else y1+1
+    
+    if map[xmid][ymid]=="~~":
+      map[x1][y1]="  "
+      print("We lost the army "+name+" due to your command!")
+      return True
+    
+    if  counterCheck(x1,y1,xmid,ymid,armyType,map,name,player,opositePlayer) and map[xmid][ymid]!="  ":
+      return True
+    
+    if checkGoods(x1,y1,xmid,ymid,player,map,playerWFG,armyType) and checkGoods(xmid,ymid,x2,y2,player,map,playerWFG,armyType):
+      return True
+    else:
+      counterval= counterCheck(xmid,ymid,x2,y2,armyType,map,name,player,opositePlayer)
+      if not counterval:
+        return False
+      if counterval and (captureHomeCheck(x2,y2,map,player) or captureHomeCheck(xmid,ymid,map,player)):
+        print("The army "+name+" captured the enemy’s capital.\n")
+        commanderName=input("What’s your name, commander?")
+        print("***Congratulation! Emperor "+commanderName+" unified the country in <year>.***")
+        sys.exit(0)
+      else:
+        return counterval
+  else :
+    if checkGoods(x1,y1,x2,y2,player,map,playerWFG,armyType):
+      return True
+    else:
+      counterval= counterCheck(x1,y1,x2,y2,armyType,map,name,player,opositePlayer)
+      if counterval and captureHomeCheck(x2,y2,map,player):
+        print("The army "+name+" captured the enemy’s capital.\n")
+        commanderName=input("What’s your name, commander?")
+        print("***Congratulation! Emperor "+commanderName+" unified the country in <year>.***")
+        sys.exit(0)
+      else:
+        return counterval
+      
+    
+    
+
+def checkGoods(x1,y1,x2,y2,player,map,playerWFG,armyType):
+  if map[x2][y2]=="GG":
+    map[x1][y1]="  "
+    map[x2][y2]=armyType+str(player)
+    print("Good. We collected 2 Gold")
+    playerWFG[2]=playerWFG[2]+2
+    return True
+  elif map[x2][y2]=="WW":
+    map[x1][y1]="  "
+    map[x2][y2]=armyType+str(player)
+    print("Good. We collected 2 Wood")
+    playerWFG[0]=playerWFG[0]+2
+    return True
+  elif map[x2][y2]=="FF":
+    map[x1][y1]="  "
+    map[x2][y2]=armyType+str(player)
+    print("Good. We collected 2 Food")
+    playerWFG[1]=playerWFG[1]+2
+    return True
+  return False
+
+def captureHomeCheck(x2,y2,map,player):
+  if player==2 and x2==1 and y2==1:
+    return True
+  elif player==1 and x2==len(map[0])-2 and y2==len(map)-2:
+    return True
+  return False
+  
+
+
+def counterCheck(x1,y1,x2,y2,armyType,map,name,player,opositePlayer):
+  
+  if map[x2][y2]=="~~":
+    map[x1][y1]="  "
+    print("We lost the army "+name+" due to your command!")
+    return True
+  elif map[x2][y2]=="  ":
+    map[x1][y1]="  "
+    map[x2][y2]=armyType+str(player)
+    return True
+  
+  value=map[x2][y2].split(str(opositePlayer))
+  if len(value)!=2:
+    return False
+  enemyArmyType=value[0]
+  enemyName=getArmyName(enemyArmyType)
+  mycode=getArmyTypeCode(armyType)
+  enemycode=getArmyTypeCode(enemyArmyType)
+  counter=[[2,1,0,1],[0,2,1,1],[1,0,2,1],[0,0,0,2]]
+  
+  if counter[mycode][enemycode]==2:
+    map[x1][y1]="  "
+    map[x2][y2]="  "
+    print("We destroyed the enemy "+enemyName+" with massive loss")
+    return True
+  if counter[mycode][enemycode]==0:
+    map[x1][y1]="  "
+    map[x2][y2]="  "
+    print("We lost the army "+name+" due to your command!")
+    return True
+  if counter[mycode][enemycode]==1:
+    map[x1][y1]="  "
+    map[x2][y2]=armyType+str(player)
+    print("Great! We defeated the enemy "+name+"!")
+    return True
+  
+
+def getArmyTypeCode(armyType):
+  if armyType=="S":
+    return 0
+  elif armyType=="K":
+    return 1
+  elif armyType=="A":
+    return 2
+  else:
+    return 3
+  
+
+def getArmyName(armyType):
+  if armyType=="S":
+    name="Sperman"
+  elif armyType=="A":
+    name="Archer"
+  elif armyType=="K":
+    name="Knight" 
+  else:
+    name="Scout"
+  return name
+    
+  
+    
 if __name__ == "__main__":
   if len(sys.argv) != 2:
     print("Usage: python3 little_battle.py <filepath>")
@@ -258,11 +484,14 @@ if __name__ == "__main__":
     year=617
     player1WFG=[2,2,2]
     player2WFG=[2,2,2]
+
     while True:
       print("-Year "+str(year)+"-")
       year=year+1
       mainRescruitLogic(player1WFG,1,map)
-      print(map)
+      mainMoveLogic(1,map,player1WFG,2)
+      mainRescruitLogic(player2WFG,2,map)
+      mainMoveLogic(2,map,player2WFG,1)
       
   except Exception as e:
     print('An exception occurred :'+str(e))
