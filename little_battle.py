@@ -143,7 +143,7 @@ def mainRescruitLogic(playerGoodsWFG,player,map):
       for good in playerGoodsWFG:
         if good==0:
           emptyGoods=emptyGoods+1
-      if emptyGoods==2:
+      if emptyGoods>=2:
         print("No resources to recruit any armies")
         return
       
@@ -265,7 +265,7 @@ def checkForArmy(player,map,armiesToMove):
   return result
 
 def printArmiesToMove(armiesToMove):
-  armies=["Spearman","Archer","Knight","Scout"]
+  armies=["Spearman","Knight","Archer","Scout"]
   count=-1
   print("\nArmies to Move")
   for row in armiesToMove:
